@@ -1,3 +1,1 @@
-git add .
-git commit -m 'a'
-git push
+git add . && git commit -m 'a' && git push
