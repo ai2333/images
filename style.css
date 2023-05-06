@@ -10,10 +10,10 @@ p{
 }
 
 
-.vscode-light pre {
-    background-color:aliceblue;
+pre {   
+    background-color:aliceblue;  /*代码块的背景颜色*/
 }
 
 blockquote{
-    background-color:honeydew
+    background-color:honeydew;   /*引用的背景颜色*/
 }
