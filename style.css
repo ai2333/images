@@ -22,3 +22,7 @@ strong{
     
     color:coral;   /*加粗后的文字颜色*/
 }
+
+li.code-line::marker{
+    color:fuchsia;
+}
