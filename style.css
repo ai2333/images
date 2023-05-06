@@ -17,3 +17,8 @@ pre {
 blockquote{
     background-color:honeydew;   /*引用的背景颜色*/
 }
+
+strong{
+    
+    color:coral;   /*加粗后的文字颜色*/
+}
