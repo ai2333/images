@@ -1,0 +1,88 @@
+
+
+
+    <canvas width="300px" height="300px"></canvas>
+   
+
+    <script type="module">
+
+        const adapter = await navigator.gpu.requestAdapter()
+        const device = await adapter.requestDevice()
+        const canvas = document.querySelector('canvas')
+        const context = canvas.getContext('webgpu')
+
+        canvas.width = canvas.clientWidth * window.devicePixelRatio
+        canvas.height = canvas.clientHeight * window.devicePixelRatio
+        const size = { width: canvas.width, height: canvas.height }
+
+        context.configure({
+            device: device,
+            format: 'bgra8unorm',
+        })
+
+        const 顶点着色器 = `
+            @vertex
+            fn main(@builtin(vertex_index) 序号 : u32) -> @builtin(position) vec4<f32> {
+                const position = array<vec2<f32>, 3>(
+                    vec2<f32>(0, 0.5),
+                    vec2<f32>(-0.5, -0.5),
+                    vec2<f32>(0.5, -0.5)
+                );
+
+                return vec4<f32>(position[序号], 0, 1);
+            }`
+
+        const 片元着色器 = `
+            @fragment
+            fn main() -> @location(0) vec4<f32> {
+                return vec4<f32>(1, 0, 0,1);
+            }`
+
+        const 管线定义 = {
+            layout: 'auto',
+            vertex: {
+                module: device.createShaderModule({
+                    code: 顶点着色器
+                }),
+                entryPoint: 'main'
+            },
+            primitive: {
+                topology: 'triangle-list' // try point-list, line-list, line-strip, triangle-strip?
+            },
+            fragment: {
+                module: device.createShaderModule({
+                    code: 片元着色器
+                }),
+                entryPoint: 'main',
+                targets: [
+                    {
+                        format: 'bgra8unorm'
+                    }
+                ]
+            }
+        }
+
+        const 管线 = await device.createRenderPipelineAsync(管线定义)
+
+        const 编码器 = device.createCommandEncoder()
+
+        const 通道定义 = {
+            colorAttachments: [
+                {
+                    view: context.getCurrentTexture().createView(),
+                    loadOp: 'clear', // clear/load
+                    storeOp: 'store' // store/discard
+                }
+            ]
+        }
+        const 通道 = 编码器.beginRenderPass(通道定义)
+
+
+        通道.setPipeline(管线)
+        通道.draw(3)
+        通道.end()
+
+        device.queue.submit([编码器.finish()])
+
+    </script>
+
